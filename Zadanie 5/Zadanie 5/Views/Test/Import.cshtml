@@ -1,0 +1,25 @@
+﻿@model Zadanie_5.Models.Import
+
+<form asp-action="Import" method="post" enctype="multipart/form-data" class="mx-auto mt-4" style="max-width: 400px;">
+    <div class="mb-3">
+        <label asp-for="File" class="form-label"></label>
+        <input asp-for="File" type="file" class="form-control" />
+        <span asp-validation-for="File" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DataSource" class="form-label"></label>
+        <select asp-for="DataSource" asp-items="Model.DataSources" class="form-select">
+            <option value="">-- Wybierz --</option>
+        </select>
+        <span asp-validation-for="DataSource" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Importuj</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

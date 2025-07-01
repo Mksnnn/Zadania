@@ -1,0 +1,30 @@
+﻿@model Klient
+
+<h2>Usuwanie klienta</h2>
+
+<h3>Czy na pewno chcesz usunąć tego klienta?</h3>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Imię</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+
+        <dt class="col-sm-2">Nazwisko</dt>
+        <dd class="col-sm-10">@Model.Surname</dd>
+
+        <dt class="col-sm-2">PESEL</dt>
+        <dd class="col-sm-10">@Model.PESEL</dd>
+
+        <dt class="col-sm-2">Rok urodzenia</dt>
+        <dd class="col-sm-10">@Model.BirthYear</dd>
+
+        <dt class="col-sm-2">Płeć</dt>
+        <dd class="col-sm-10">@Model.Gender</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Usuń</button>
+        <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+    </form>
+</div>

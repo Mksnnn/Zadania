@@ -1,0 +1,133 @@
+﻿@model Klient
+
+@{
+    ViewData["Title"] = "Edytuj klienta";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post" novalidate>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Surname"></label>
+        <input asp-for="Surname" class="form-control" required />
+        <span asp-validation-for="Surname" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PESEL"></label>
+        <input asp-for="PESEL" class="form-control" maxlength="11" minlength="11" required pattern="^\d{11}$" id="pesel" />
+        <span asp-validation-for="PESEL" class="text-danger"></span>
+        <small id="peselError" class="text-danger" style="display:none;">Niepoprawny numer PESEL</small>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BirthYear"></label>
+        <input asp-for="BirthYear" class="form-control" readonly id="birthYear" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Gender"></label>
+        <input asp-for="Gender" class="form-control" readonly id="gender" />
+        <small class="form-text text-muted">0 - mężczyzna, 1 - kobieta</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Zapisz</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function validatePESEL(pesel) {
+            if (!/^\d{11}$/.test(pesel)) return false;
+
+            const weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+            let sum = 0;
+
+            for (let i = 0; i < 10; i++) {
+                sum += weights[i] * parseInt(pesel.charAt(i), 10);
+            }
+
+            const control = (10 - (sum % 10)) % 10;
+            return control === parseInt(pesel.charAt(10), 10);
+        }
+
+        function extractBirthYear(pesel) {
+            let year = parseInt(pesel.substr(0, 2), 10);
+            let month = parseInt(pesel.substr(2, 2), 10);
+
+            let fullYear;
+
+            if (month >= 81 && month <= 92) {
+                fullYear = 1800 + year;
+            } else if (month >= 1 && month <= 12) {
+                fullYear = 1900 + year;
+            } else if (month >= 21 && month <= 32) {
+                fullYear = 2000 + year;
+                month -= 20;
+            } else if (month >= 41 && month <= 52) {
+                fullYear = 2100 + year;
+                month -= 40;
+            } else if (month >= 61 && month <= 72) {
+                fullYear = 2200 + year;
+                month -= 60;
+            } else {
+                return null;
+            }
+
+            return fullYear;
+        }
+
+        function extractGender(pesel) {
+            const genderDigit = parseInt(pesel.charAt(9), 10);
+            return (genderDigit % 2 === 0) ? 1 : 0;
+        }
+
+        function updateForm() {
+            const peselInput = document.getElementById('pesel');
+            const birthYearInput = document.getElementById('birthYear');
+            const genderInput = document.getElementById('gender');
+            const submitBtn = document.getElementById('submitBtn');
+            const peselError = document.getElementById('peselError');
+
+            const pesel = peselInput.value;
+
+            if (pesel.length === 11 && validatePESEL(pesel)) {
+                peselError.style.display = 'none';
+                const birthYear = extractBirthYear(pesel);
+                const gender = extractGender(pesel);
+
+                if (birthYear !== null) {
+                    birthYearInput.value = birthYear;
+                } else {
+                    birthYearInput.value = '';
+                }
+
+                genderInput.value = gender;
+                submitBtn.disabled = false;
+            } else {
+                birthYearInput.value = '';
+                genderInput.value = '';
+                submitBtn.disabled = true;
+
+                if (pesel.length === 11) {
+                    peselError.style.display = 'block';
+                } else {
+                    peselError.style.display = 'none';
+                }
+            }
+        }
+
+        document.getElementById('pesel').addEventListener('input', updateForm);
+
+        updateForm();
+    </script>
+}

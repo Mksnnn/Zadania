@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Klient>
+
+@{
+    ViewData["Title"] = "Lista klientów";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+    <a asp-action="Create" class="btn btn-success">Dodaj klienta</a>
+    <a asp-action="Import" class="btn btn-secondary">Importuj klientów z CSV</a>
+    <form asp-action="Export" method="post" class="d-flex" style="max-width: 300px;">
+        <select name="exportFormat" class="form-select me-2" required>
+            <option value="">Wybierz format eksportu...</option>
+            <option value="CSV">CSV</option>
+            <option value="XLSX">XLSX</option>
+        </select>
+        <button type="submit" class="btn btn-success">Eksportuj klientów</button>
+    </form>
+</div>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th>PESEL</th>
+            <th>Rok urodzenia</th>
+            <th>Płeć</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var klient in Model)
+        {
+            <tr>
+                <td>@klient.Id</td>
+                <td>@klient.Name</td>
+                <td>@klient.Surname</td>
+                <td>@klient.PESEL</td>
+                <td>@klient.BirthYear</td>
+                <td>@klient.Gender</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@klient.Id" class="btn btn-primary btn-sm me-1 mb-1">Edycja</a>
+                    <form asp-action="Delete" asp-route-id="@klient.Id" method="post" class="d-inline"
+                          onsubmit="return confirm('Czy na pewno chcesz usunąć tego klienta?');">
+                        <button type="submit" class="btn btn-danger btn-sm mb-1">Usuń</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
